@@ -1,3 +1,4 @@
+.DS_Store
 **/__pycache__
 **/bin
 **/cmake
@@ -13,4 +14,4 @@
 **/var
 **/share
 **/.ipynb_checkpoints
-tempCodeRunnerFile.py
+**/tempCodeRunnerFile.py
