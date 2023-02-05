@@ -1,0 +1,8 @@
+.ipynb_checkpoints
+.DS_Store
+*
+!.gitignore
+!*/*.pt
+!*/*.xml
+!*/*.ipynb
+!*/*.py
