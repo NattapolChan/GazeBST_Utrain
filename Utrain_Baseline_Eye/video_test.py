@@ -7,15 +7,17 @@ from UnsupervisedGaze_model import *
 import math
 import time
 
-eye_cascade_left = cv2.CascadeClassifier('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Eye/haarcascade_lefteye_2splits.xml')
-eye_cascade_right = cv2.CascadeClassifier('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Eye/haarcascade_righteye_2splits.xml')
-face_cascade = cv2.CascadeClassifier('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Eye/haarcascade_face.xml')
+openCV_PATH = '/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Eye/OpenCV_Localisation_Model/'
+eye_cascade_left = cv2.CascadeClassifier(openCV_PATH+'haarcascade_lefteye_2splits.xml')
+eye_cascade_right = cv2.CascadeClassifier(openCV_PATH+'haarcascade_righteye_2splits.xml')
+face_cascade = cv2.CascadeClassifier(openCV_PATH+'haarcascade_face.xml')
 
+pretrained_PATH = '/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Eye/Pretrained_Model/'
 first_read = True
 cap = cv2.VideoCapture(0)
 ret, img = cap.read()
 model = GazeRepresentationLearning()
-model = torch.load('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Eye/advers_final_baseline_error=tensor(6.1656, grad_fn=<SumBackward0>).pt')
+model = torch.load(pretrained_PATH+'advers_final_baseline_error=tensor(6.1656, grad_fn=<SumBackward0>).pt')
 model.eval()
 
 def crop_center(img,cropy,cropx):
@@ -70,10 +72,8 @@ while(ret):
                     output = model(eyes_input_torch)
                     output = np.array(output)
                     size = 100
-                    # print(output)
                     point_from = [eyes_input.shape[3]//2, eyes_input.shape[2]//2]
                     point_to = [eyes_input.shape[3]//2 + size * math.sin(math.pi/180 * output[0][0]) * math.cos(math.pi/180 * output[0][1]), eyes_input.shape[2]//2 + size * math.sin(math.pi/180 * output[0][1])]
-                    # plt.plot((point_from[0], point_to[0]), (point_from[1], point_to[1]), color="white", linewidth=3)
                     if plot_each_frame:
                         ax.imshow(eyes_input[0,0,:,:])
                         ax.arrow(point_from[0], point_from[1], point_to[0]-point_from[0], point_to[1]-point_from[1], color="white", linewidth=3)
@@ -82,7 +82,6 @@ while(ret):
                         ax.set_title(f'{yaw=} {pitch=}')
                         plt.ion()
                         plt.show()
-                    # print((y + point_from[1], x + point_from[0]), (y + point_to[1], x + point_to[0]))
                     cv2.arrowedLine(img, (x + eyes_left[0][0] + int(point_from[0]), y + eyes_left[0][1] + int(point_from[1]) + 15), ( x + eyes_left[0][0]+ int(point_to[0]), y + eyes_left[0][1] + int(point_to[1]) + 15), color = (0,255,0), thickness = 2)
     cv2.imshow("image", img)
     a = cv2.waitKey(1)

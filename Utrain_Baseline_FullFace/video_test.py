@@ -7,9 +7,10 @@ from UnsupervisedGaze_model import *
 import math
 import time
 
-eye_cascade_left = cv2.CascadeClassifier('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Fullface/haarcascade_lefteye_2splits.xml')
-eye_cascade_right = cv2.CascadeClassifier('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Fullface/haarcascade_righteye_2splits.xml')
-face_cascade = cv2.CascadeClassifier('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_Fullface/haarcascade_face.xml')
+openCV_PATH = '/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_FullFace/OpenCV_Localisation_Model'
+eye_cascade_left = cv2.CascadeClassifier(openCV_PATH+'haarcascade_lefteye_2splits.xml')
+eye_cascade_right = cv2.CascadeClassifier(openCV_PATH+'haarcascade_righteye_2splits.xml')
+face_cascade = cv2.CascadeClassifier(openCV_PATH+'haarcascade_face.xml')
 
 first_read = True
 cap = cv2.VideoCapture(0)
