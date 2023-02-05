@@ -1,0 +1,9 @@
+test results: [6.688797481536865, 6.75184965133667, 7.1810197830200195, 6.818227767944336]
+lr = 1e-4, halves per 20 epochs
+batch_size = 96
+epoches = 80
+GazeRepresentationLearning (baseline)
+train = 96 * 16, test = 500
+
+
+1568456984

@@ -1,0 +1,15 @@
+**/__pycache__
+**/bin
+**/cmake
+**/conda-meta
+**/ssl
+**/etc
+**/fonts
+**/include
+**/lib
+**/libexec
+**/man
+**/sbin
+**/var
+**/share
+**/.ipynb_checkpoints
