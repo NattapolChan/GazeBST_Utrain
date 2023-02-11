@@ -16,3 +16,5 @@
 **/.ipynb_checkpoints
 **/tempCodeRunnerFile.py
 **/images
+Sample_Images_Test/**
+!Sample_Images_Test/*+S.png
