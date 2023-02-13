@@ -15,8 +15,10 @@ face_cascade = cv2.CascadeClassifier(openCV_PATH+'haarcascade_face.xml')
 first_read = True
 cap = cv2.VideoCapture(0)
 ret, img = cap.read()
+
+font = cv2.FONT_HERSHEY_SIMPLEX
 model = GazeRepresentationLearning_fullface()
-model.load_state_dict(torch.load('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_FullFace/Pretrained_Model/adv_baseline_epoch=56_loss=4.044334411621094_batch_size=16_weight_decay=0.0001.pt', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_FullFace/Pretrained_Model/adv_Utrain_fullface_error=5.14.pth', map_location=torch.device('cpu')))
 model.eval()
 
 def crop_center(img,cropy,cropx):
@@ -29,6 +31,11 @@ def find_abs_angle_difference(a, b):
     cos_theta = torch.cos(a/180 * math.pi) * torch.cos(b/180 * math.pi) 
     theta = torch.acos(cos_theta)
     return torch.abs(theta * 180 / math.pi)
+
+preprocess = transforms.Compose([
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+    transforms.Resize(size=(224,224))
+])
 
 cur_time = 0
 prev_time = 0
@@ -57,29 +64,30 @@ while(ret):
             face = img[y:y+h,x:x+w]
             eyes_input = face
             eyes_input = np.transpose(eyes_input, (2, 0, 1))
-            eyes_input = crop_center(eyes_input, 224, 224)
-            eyes_input = (eyes_input - eyes_input.mean(axis=(0,1,2), keepdims=True)) / eyes_input.std(axis=(0,1,2), keepdims=True)
-            if eyes_input.shape != (3,224,224) :
-                continue
-            print("Here")
-            eyes_input = np.resize(eyes_input, (1, 3, 224, 224))
-            eyes_input_torch = torch.from_numpy(eyes_input)
+            eyes_input_torch = torch.from_numpy(eyes_input) / 255
             eyes_input_torch = eyes_input_torch.to(torch.float32)
+            eyes_input_torch = preprocess(eyes_input_torch)
+            eyes_input_torch = eyes_input_torch.view(1, 3, 224, 224)
             with torch.no_grad():
+                rgbPermutation = [2,1,0]
+                eyes_input_torch = eyes_input_torch[:, rgbPermutation, :, :]
                 output = model(eyes_input_torch)
+                eyes_input_torch = eyes_input_torch.view(1, 3, 224, 224)
                 output = np.array(output)
                 size = 100
-                point_from = [eyes_input.shape[3]//2, eyes_input.shape[2]//2]
-                point_to = [eyes_input.shape[3]//2 + size * math.sin(math.pi/180 * output[0][0]) * math.cos(math.pi/180 * output[0][1]), eyes_input.shape[2]//2 + size * math.sin(math.pi/180 * output[0][1])]
+                point_from = [112, 112]
+                point_to = [112 * math.sin(math.pi/180 * output[0][0]) * math.cos(math.pi/180 * output[0][1]), 112 * math.sin(math.pi/180 * output[0][1])]
+                yaw = str(float(output[0][0]))[:5]
+                pitch = str(float(output[0][1]))[:5]
                 if plot_each_frame:
-                    ax.imshow(eyes_input[0,0,:,:])
-                    ax.arrow(point_from[0], point_from[1], point_to[0]-point_from[0], point_to[1]-point_from[1], color="white", linewidth=3)
-                    yaw = str(float(output[0][0]))[:5]
-                    pitch = str(float(output[0][1]))[:5]
-                    ax.set_title(f'{yaw=} {pitch=}')
-                    plt.ion()
+                    a = eyes_input_torch
+                    a = torch.permute(a, (0,2,3,1)) * 0.5 + 0.5
+                    plt.imshow(a[0,:,:,:])
+                    plt.arrow(point_from[0], point_from[1], point_to[0]-point_from[0], point_to[1]-point_from[1], color="white", linewidth=3)
+                    plt.title(f'{yaw=} {pitch=}')
                     plt.show()
-                cv2.arrowedLine(img, (x + int(point_from[0]), y  + int(point_from[1]) + 15), ( x + int(point_to[0]), y + int(point_to[1]) + 15), color = (0,255,0), thickness = 2)
+                cv2.arrowedLine(img, (x + int(point_from[0]), y  + int(point_from[1])), ( x + int(point_to[0]), y + int(point_to[1])), color = (0,255,120), thickness = 3)
+                cv2.putText(img, f'V : {yaw}   H : {pitch}', org = (0, 50), fontFace = cv2.FONT_HERSHEY_PLAIN, fontScale = 2, color = (200, 200, 100), thickness=2)
     cv2.imshow("image", img)
     a = cv2.waitKey(1)
     if a & 0xFF == ord('q'):
