@@ -37,6 +37,6 @@ for i in range(imagesTensor.size(0)):
     im3 = axes[count //5, count%5].imshow(imagesTensor[count, :, :, :], aspect='auto')
     count += 1
 plt.tight_layout()
-fig.suptitle('Sample Image test : Utrain_FF_ADV on Sample Image (trained on Columbia Gaze)  Res = (3,80,116)')
+fig.suptitle('Sample Image test : Utrain_FF_ADV on Sample Image (trained on Columbia Gaze)  Res = (3,224,224)')
 plt.subplots_adjust(top=0.92)
 plt.show()
