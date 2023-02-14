@@ -36,7 +36,7 @@ python <Utrain_Baseline_Eye/Utrain_Baseline_Fullface>/image_test.py
 | Model | Accuracy, mean angle error (deg) | Resolution | Params |
 | ----- | ----------------------------| ---------- | ------ |
 | Utrain (eye) | 4.26 | 36 x 60 | 3.08 M |
-| Utrain (eye) advers | - | 36 x 60 | 3.08 M |
+| Utrain (eye) + advers | 3.72 | 36 x 60 | 3.08 M |
 | Utrain (cropped face) | 4.99 | 80 x 112 | 3.10 M |
 | Utrain (cropped face) + advers | 4.15 | 80 x 112 | 3.10 M |
 | Utrain (full face) | - | 224 x 224 | 3.19 M |
