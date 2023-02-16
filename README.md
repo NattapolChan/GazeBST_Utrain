@@ -39,5 +39,5 @@ python <Utrain_Baseline_Eye/Utrain_Baseline_Fullface>/image_test.py
 | Utrain (eye) + advers | 3.72 | 36 x 60 | 3.08 M |
 | Utrain (cropped face) | 4.99 | 80 x 112 | 3.10 M |
 | Utrain (cropped face) + advers | 4.15 | 80 x 112 | 3.10 M |
-| Utrain (full face) | - | 224 x 224 | 3.19 M |
-| Utrain (full face) + advers | 3.86 | 224 x 224 | 3.19 M |
+| Utrain (full face) | 3.61 | 224 x 224 | 3.19 M |
+| Utrain (full face) + advers | 3.43 | 224 x 224 | 3.19 M |
