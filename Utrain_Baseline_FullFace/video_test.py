@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from UnsupervisedGaze_model import *
 import math
 import time
+from blazeface import BlazeFace
 
 openCV_PATH = '/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_FullFace/OpenCV_Localisation_Model/'
 eye_cascade_left = cv2.CascadeClassifier(openCV_PATH+'haarcascade_lefteye_2splits.xml')
@@ -16,7 +17,14 @@ first_read = True
 cap = cv2.VideoCapture(0)
 ret, img = cap.read()
 
+videoShape = (img.shape[0], img.shape[1])
+
 font = cv2.FONT_HERSHEY_SIMPLEX
+
+blazeface = BlazeFace()
+blazeface.load_weights('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_FullFace/blazeface/blazeface.pth')
+blazeface.load_anchors('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_FullFace/blazeface/anchors.npy')
+
 model = GazeRepresentationLearning_fullface()
 model.load_state_dict(torch.load('/Users/nattapolchanpaisit/GazeBST/Utrain_Baseline_FullFace/Pretrained_Model/adv_Utrain_fullface_error=3.49.pth', map_location=torch.device('cpu')))
 model.eval()
@@ -36,6 +44,11 @@ preprocess = transforms.Compose([
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     transforms.Resize(size=(224,224))
 ])
+preprocess_face = transforms.Compose([
+    transforms.CenterCrop(size=(min(videoShape),min(videoShape))),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+    transforms.Resize(size=(128,128))
+])
 
 cur_time = 0
 prev_time = 0
@@ -49,8 +62,13 @@ while(ret):
     ret, img = cap.read()
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img_gray = cv2.bilateralFilter(img_gray,5,1,1)
+    faceTensor = np.transpose(img, (2, 0, 1))
+    faceTensor = torch.from_numpy(faceTensor) / 255
+    faceTensor = preprocess_face(faceTensor)
+    faceTensor = faceTensor.view(1, 3, 128, 128)
+    blazefaceOutput = blazeface.predict_on_batch(faceTensor * 127.5 + 127.5)
+    print(blazefaceOutput)
     faces = face_cascade.detectMultiScale(img_gray, 1.3, 5)
-
     cur_time = time.time()
     if cur_time-prev_time > 1:
         prev_time = time.time()
